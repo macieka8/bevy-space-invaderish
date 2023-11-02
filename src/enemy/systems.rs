@@ -5,27 +5,6 @@ use bevy::prelude::*;
 use bevy::sprite::collide_aabb::collide;
 use rand::Rng;
 
-pub fn create_enemies_system(mut commands: Commands, asset_server: Res<AssetServer>) {
-    let x_interspace: f32 = 0.5 + 0.5;
-    let x_offset: f32 = -(x_interspace / 2.0 + x_interspace * 4.0);
-    let y_offset: f32 = 4.0;
-
-    let mut rng = rand::thread_rng();
-
-    for y in 0..4 {
-        for x in 0..10 {
-            commands.spawn(EnemyBundle::new(
-                Vec2::new(
-                    x_offset + x_interspace * x as f32,
-                    y_offset - y as f32 * x_interspace,
-                ),
-                rng.gen_range(ENEMY_BULLET_SHOT_RATE.x..ENEMY_BULLET_SHOT_RATE.y),
-                &asset_server,
-            ));
-        }
-    }
-}
-
 pub fn check_enemy_collision_system(
     mut commands: Commands,
     bullet_query: Query<(&Transform, &Sprite, Entity), (With<Bullet>, Without<EnemyBullet>)>,

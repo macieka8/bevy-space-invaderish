@@ -2,12 +2,14 @@ use bevy::{prelude::*, window::WindowResolution};
 use bullet::destroy_faraway_bullets_system;
 use camera::CenterCameraPlugin;
 use enemy::EnemyPlugin;
+use levels::LevelsPlugin;
 use movement::MovementPlugin;
 use player::{PlayerBundle, PlayerPlugin};
 
 mod bullet;
 mod camera;
 mod enemy;
+mod levels;
 mod movement;
 mod player;
 
@@ -44,6 +46,7 @@ fn main() {
             CenterCameraPlugin,
             MovementPlugin,
             EnemyPlugin,
+            LevelsPlugin,
         ))
         .add_systems(Startup, setup)
         .add_systems(Update, destroy_faraway_bullets_system)
