@@ -4,6 +4,9 @@ use bevy::prelude::*;
 #[derive(Component)]
 pub struct Bullet;
 
+#[derive(Component)]
+pub struct BulletShotCooldown(pub f32);
+
 #[derive(Bundle)]
 pub struct BulletBundle {
     pub sprite_bundle: SpriteBundle,
@@ -34,7 +37,7 @@ pub fn destroy_faraway_bullets_system(
     query: Query<(&Transform, Entity), With<Bullet>>,
 ) {
     for (transform, entity) in query.iter() {
-        if transform.translation.y > 6.0 {
+        if transform.translation.y > 6.0 || transform.translation.y < -6.0 {
             commands.entity(entity).despawn();
         }
     }
