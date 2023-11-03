@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::GameSet;
+use crate::{AppState, GameSet};
 
 #[derive(Component, Deref, DerefMut, Debug)]
 pub struct Velocity(pub Vec2);
@@ -11,7 +11,9 @@ impl Plugin for MovementPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             FixedUpdate,
-            update_movement_system.in_set(GameSet::Movement),
+            update_movement_system
+                .in_set(GameSet::Movement)
+                .run_if(in_state(AppState::Gameplay)),
         );
     }
 }

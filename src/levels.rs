@@ -1,7 +1,10 @@
 use bevy::prelude::*;
 use rand::Rng;
 
-use crate::enemy::components::{Enemy, EnemyBundle, ENEMY_BULLET_SHOT_RATE};
+use crate::{
+    enemy::components::{Enemy, EnemyBundle, ENEMY_BULLET_SHOT_RATE},
+    AppState,
+};
 
 #[derive(Resource)]
 pub struct CurrentLevel(pub u32);
@@ -11,7 +14,7 @@ pub struct LevelsPlugin;
 impl Plugin for LevelsPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(CurrentLevel(0))
-            .add_systems(Update, level_loader);
+            .add_systems(Update, level_loader.run_if(in_state(AppState::Gameplay)));
     }
 }
 

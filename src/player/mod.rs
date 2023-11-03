@@ -1,4 +1,4 @@
-use crate::GameSet;
+use crate::{AppState, GameSet};
 use bevy::prelude::*;
 pub use components::*;
 use systems::*;
@@ -16,11 +16,15 @@ impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             FixedUpdate,
-            player_movement_restriction_system.after(GameSet::Movement),
+            player_movement_restriction_system
+                .after(GameSet::Movement)
+                .run_if(in_state(AppState::Gameplay)),
         )
         .add_systems(
             Update,
-            (player_shoot_input_system, player_movement_input_system).in_set(GameSet::Input),
+            (player_shoot_input_system, player_movement_input_system)
+                .in_set(GameSet::Input)
+                .run_if(in_state(AppState::Gameplay)),
         );
     }
 }

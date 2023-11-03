@@ -1,4 +1,4 @@
-use crate::GameSet;
+use crate::{GameSet, AppState};
 use bevy::prelude::*;
 use systems::*;
 
@@ -15,7 +15,7 @@ impl Plugin for EnemyPlugin {
                 check_enemy_collision_system.after(GameSet::Movement),
                 check_player_collision_system.after(GameSet::Movement),
                 enemy_shoot_system,
-            ),
+            ).run_if(in_state(AppState::Gameplay)),
         );
     }
 }

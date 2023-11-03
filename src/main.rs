@@ -3,6 +3,7 @@ use bullet::destroy_faraway_bullets_system;
 use camera::CenterCameraPlugin;
 use enemy::EnemyPlugin;
 use levels::LevelsPlugin;
+use menu::MenuPlugin;
 use movement::MovementPlugin;
 use player::{PlayerBundle, PlayerPlugin};
 
@@ -10,6 +11,7 @@ mod bullet;
 mod camera;
 mod enemy;
 mod levels;
+mod menu;
 mod movement;
 mod player;
 
@@ -19,6 +21,13 @@ enum GameSet {
     Movement,
 }
 
+#[derive(States, PartialEq, Eq, Debug, Clone, Hash, Default)]
+enum AppState {
+    #[default]
+    Gameplay,
+    Paused,
+}
+
 const CAMERA_SIZE: Vec2 = Vec2::new(12.0, 12.0);
 
 const WINDOW_RESOLUTION_WIDTH: f32 = 800.0;
@@ -26,6 +35,7 @@ const WINDOW_RESOLUTION_HEIGHT: f32 = 600.0;
 
 fn main() {
     App::new()
+        .add_state::<AppState>()
         .configure_set(Update, GameSet::Input)
         .configure_set(FixedUpdate, GameSet::Movement)
         .insert_resource(ClearColor(Color::rgb(0.1, 0.1, 0.1)))
@@ -47,9 +57,13 @@ fn main() {
             MovementPlugin,
             EnemyPlugin,
             LevelsPlugin,
+            MenuPlugin,
         ))
-        .add_systems(Startup, setup)
-        .add_systems(Update, destroy_faraway_bullets_system)
+        .add_systems(Startup, setup.run_if(in_state(AppState::Gameplay)))
+        .add_systems(
+            Update,
+            destroy_faraway_bullets_system.run_if(in_state(AppState::Gameplay)),
+        )
         .add_systems(Update, bevy::window::close_on_esc)
         .run();
 }

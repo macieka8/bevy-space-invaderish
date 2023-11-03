@@ -1,6 +1,7 @@
 use super::components::*;
 use crate::bullet::{Bullet, BulletBundle, BulletShotCooldown};
 use crate::player::Player;
+use crate::AppState;
 use bevy::prelude::*;
 use bevy::sprite::collide_aabb::collide;
 use rand::Rng;
@@ -34,6 +35,7 @@ pub fn check_player_collision_system(
     mut commands: Commands,
     bullet_query: Query<(&Transform, &Sprite, Entity), With<EnemyBullet>>,
     player_query: Query<(&Transform, &Sprite, Entity), With<Player>>,
+    mut next_state: ResMut<NextState<AppState>>,
 ) {
     for (bullet_transform, bullet_sprite, bullet_entity) in &bullet_query {
         for (player_transform, player_sprite, player_entity) in &player_query {
@@ -50,7 +52,7 @@ pub fn check_player_collision_system(
             if collision.is_some() {
                 commands.entity(bullet_entity).despawn();
                 // todo: handle player got hit
-                commands.entity(player_entity).despawn();
+                next_state.set(AppState::Paused);
             }
         }
     }
