@@ -39,6 +39,12 @@ fn setup_camera(mut commands: Commands) {
             order: 1,
             ..default()
         },
+        // This Hack makes sure nothing is rendered to Window from this camera except UI
+        projection: OrthographicProjection {
+            near: 0.0,
+            far: 0.0,
+            ..default()
+        },
         ..default()
     });
 }
