@@ -19,7 +19,7 @@ impl Plugin for LevelsPlugin {
 }
 
 pub fn level_loader(
-    mut commands: Commands,
+    commands: Commands,
     asset_server: Res<AssetServer>,
     mut current_level: ResMut<CurrentLevel>,
     enemy_query: Query<(), With<Enemy>>,

@@ -34,11 +34,11 @@ pub fn check_enemy_collision_system(
 pub fn check_player_collision_system(
     mut commands: Commands,
     bullet_query: Query<(&Transform, &Sprite, Entity), With<EnemyBullet>>,
-    player_query: Query<(&Transform, &Sprite, Entity), With<Player>>,
+    player_query: Query<(&Transform, &Sprite), With<Player>>,
     mut next_state: ResMut<NextState<AppState>>,
 ) {
     for (bullet_transform, bullet_sprite, bullet_entity) in &bullet_query {
-        for (player_transform, player_sprite, player_entity) in &player_query {
+        for (player_transform, player_sprite) in &player_query {
             // TODO: Handle changed scale
             let bullet_size = bullet_sprite.custom_size.unwrap_or(Vec2::new(1.0, 1.0));
             let player_size = player_sprite.custom_size.unwrap_or(Vec2::new(1.0, 1.0));
