@@ -1,4 +1,4 @@
-use crate::{movement::Velocity, AppState};
+use crate::{levels::LevelChangedEvent, movement::Velocity, AppState};
 use bevy::prelude::*;
 
 #[derive(Component)]
@@ -39,8 +39,20 @@ impl Plugin for BulletPlugin {
         app.add_systems(OnEnter(AppState::Gameplay), destroy_all_bullets)
             .add_systems(
                 Update,
-                destroy_faraway_bullets_system.run_if(in_state(AppState::Gameplay)),
+                (destroy_faraway_bullets_system, on_level_changed_event)
+                    .run_if(in_state(AppState::Gameplay)),
             );
+    }
+}
+
+fn on_level_changed_event(
+    commands: Commands,
+    query: Query<Entity, With<Bullet>>,
+    mut ev_level_changed: EventReader<LevelChangedEvent>,
+) {
+    if !ev_level_changed.is_empty() {
+        ev_level_changed.clear();
+        destroy_all_bullets(commands, query);
     }
 }
 

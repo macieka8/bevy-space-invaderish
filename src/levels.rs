@@ -9,11 +9,15 @@ use crate::{
 #[derive(Resource)]
 pub struct CurrentLevel(pub u32);
 
+#[derive(Event)]
+pub struct LevelChangedEvent;
+
 pub struct LevelsPlugin;
 
 impl Plugin for LevelsPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(CurrentLevel(0))
+            .add_event::<LevelChangedEvent>()
             .add_systems(Update, level_loader.run_if(in_state(AppState::Gameplay)))
             .add_systems(OnEnter(AppState::Gameplay), reset_level);
     }
@@ -28,6 +32,7 @@ fn level_loader(
     asset_server: Res<AssetServer>,
     mut current_level: ResMut<CurrentLevel>,
     enemy_query: Query<(), With<Enemy>>,
+    mut ev_level_changed: EventWriter<LevelChangedEvent>,
 ) {
     if enemy_query.is_empty() {
         current_level.0 += 1;
@@ -37,6 +42,8 @@ fn level_loader(
             3 => level_3(commands, asset_server),
             _ => println!("No more levels."),
         }
+
+        ev_level_changed.send(LevelChangedEvent);
     }
 }
 
