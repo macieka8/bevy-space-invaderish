@@ -1,4 +1,4 @@
-use crate::movement::Velocity;
+use crate::{movement::Velocity, AppState};
 use bevy::prelude::*;
 
 #[derive(Component)]
@@ -32,7 +32,19 @@ impl BulletBundle {
     }
 }
 
-pub fn destroy_faraway_bullets_system(
+pub struct BulletPlugin;
+
+impl Plugin for BulletPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(OnEnter(AppState::Gameplay), destroy_all_bullets)
+            .add_systems(
+                Update,
+                destroy_faraway_bullets_system.run_if(in_state(AppState::Gameplay)),
+            );
+    }
+}
+
+fn destroy_faraway_bullets_system(
     mut commands: Commands,
     query: Query<(&Transform, Entity), With<Bullet>>,
 ) {
@@ -40,5 +52,11 @@ pub fn destroy_faraway_bullets_system(
         if transform.translation.y > 6.0 || transform.translation.y < -6.0 {
             commands.entity(entity).despawn();
         }
+    }
+}
+
+fn destroy_all_bullets(mut commands: Commands, query: Query<Entity, With<Bullet>>) {
+    for entity in &query {
+        commands.entity(entity).despawn();
     }
 }

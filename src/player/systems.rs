@@ -4,6 +4,29 @@ use bevy::prelude::*;
 
 use crate::player::*;
 
+pub fn reset_player(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    player_query: Query<Entity, With<Player>>,
+) {
+    for entity in &player_query {
+        commands.entity(entity).despawn();
+    }
+
+    commands.spawn(PlayerBundle {
+        sprite_bundle: SpriteBundle {
+            texture: asset_server.load("images/ship.png"),
+            transform: Transform::from_xyz(0.0, -5.0, 0.0),
+            sprite: Sprite {
+                custom_size: Some(Vec2::new(1.0, 1.0)),
+                ..default()
+            },
+            ..default()
+        },
+        ..default()
+    });
+}
+
 pub fn player_movement_input_system(
     keyboard_input: Res<Input<KeyCode>>,
     mut query: Query<&mut Velocity, With<Player>>,

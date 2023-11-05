@@ -25,6 +25,7 @@ impl Plugin for PlayerPlugin {
             (player_shoot_input_system, player_movement_input_system)
                 .in_set(GameSet::Input)
                 .run_if(in_state(AppState::Gameplay)),
-        );
+        )
+        .add_systems(OnEnter(AppState::Gameplay), reset_player);
     }
 }

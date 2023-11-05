@@ -14,11 +14,16 @@ pub struct LevelsPlugin;
 impl Plugin for LevelsPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(CurrentLevel(0))
-            .add_systems(Update, level_loader.run_if(in_state(AppState::Gameplay)));
+            .add_systems(Update, level_loader.run_if(in_state(AppState::Gameplay)))
+            .add_systems(OnEnter(AppState::Gameplay), reset_level);
     }
 }
 
-pub fn level_loader(
+fn reset_level(mut current_level: ResMut<CurrentLevel>) {
+    current_level.0 = 0;
+}
+
+fn level_loader(
     commands: Commands,
     asset_server: Res<AssetServer>,
     mut current_level: ResMut<CurrentLevel>,
@@ -35,7 +40,7 @@ pub fn level_loader(
     }
 }
 
-pub fn level_1(mut commands: Commands, asset_server: Res<AssetServer>) {
+fn level_1(mut commands: Commands, asset_server: Res<AssetServer>) {
     let x_interspace: f32 = 0.5 + 3.0;
     let x_offset: f32 = -2.0;
     let y_offset: f32 = 4.0;
@@ -56,7 +61,7 @@ pub fn level_1(mut commands: Commands, asset_server: Res<AssetServer>) {
     }
 }
 
-pub fn level_2(mut commands: Commands, asset_server: Res<AssetServer>) {
+fn level_2(mut commands: Commands, asset_server: Res<AssetServer>) {
     let x_interspace: f32 = 0.5 + 0.5;
     let x_offset: f32 = -1.0;
     let y_offset: f32 = 4.0;
@@ -77,7 +82,7 @@ pub fn level_2(mut commands: Commands, asset_server: Res<AssetServer>) {
     }
 }
 
-pub fn level_3(mut commands: Commands, asset_server: Res<AssetServer>) {
+fn level_3(mut commands: Commands, asset_server: Res<AssetServer>) {
     let x_interspace: f32 = 0.5 + 0.5;
     let x_offset: f32 = -(x_interspace / 2.0 + x_interspace * 4.0);
     let y_offset: f32 = 4.0;

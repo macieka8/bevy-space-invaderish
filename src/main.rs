@@ -1,11 +1,11 @@
 use bevy::{prelude::*, window::WindowResolution};
-use bullet::destroy_faraway_bullets_system;
+use bullet::BulletPlugin;
 use camera::CenterCameraPlugin;
 use enemy::EnemyPlugin;
 use levels::LevelsPlugin;
 use menu::MenuPlugin;
 use movement::MovementPlugin;
-use player::{PlayerBundle, PlayerPlugin};
+use player::PlayerPlugin;
 
 mod bullet;
 mod camera;
@@ -58,31 +58,14 @@ fn main() {
             EnemyPlugin,
             LevelsPlugin,
             MenuPlugin,
+            BulletPlugin,
         ))
-        .add_systems(Startup, setup.run_if(in_state(AppState::Gameplay)))
-        .add_systems(
-            Update,
-            destroy_faraway_bullets_system.run_if(in_state(AppState::Gameplay)),
-        )
+        .add_systems(Startup, setup)
         .add_systems(Update, bevy::window::close_on_esc)
         .run();
 }
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
-    // spawn player
-    commands.spawn(PlayerBundle {
-        sprite_bundle: SpriteBundle {
-            texture: asset_server.load("images/ship.png"),
-            transform: Transform::from_xyz(0.0, -5.0, 0.0),
-            sprite: Sprite {
-                custom_size: Some(Vec2::new(1.0, 1.0)),
-                ..default()
-            },
-            ..default()
-        },
-        ..default()
-    });
-
     // spawn background image
     commands.spawn(SpriteBundle {
         texture: asset_server.load("images/space.png"),

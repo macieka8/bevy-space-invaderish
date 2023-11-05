@@ -6,6 +6,12 @@ use bevy::prelude::*;
 use bevy::sprite::collide_aabb::collide;
 use rand::Rng;
 
+pub fn reset_enemy(mut commands: Commands, enemy_query: Query<Entity, With<Enemy>>) {
+    for entity in &enemy_query {
+        commands.entity(entity).despawn();
+    }
+}
+
 pub fn check_enemy_collision_system(
     mut commands: Commands,
     bullet_query: Query<(&Transform, &Sprite, Entity), (With<Bullet>, Without<EnemyBullet>)>,
