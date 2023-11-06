@@ -39,7 +39,11 @@ impl Plugin for BulletPlugin {
         app.add_systems(OnEnter(AppState::Gameplay), destroy_all_bullets)
             .add_systems(
                 Update,
-                (destroy_faraway_bullets_system, on_level_changed_event)
+                (
+                    destroy_faraway_bullets_system,
+                    on_level_changed_event,
+                    update_bullet_shot_cooldown,
+                )
                     .run_if(in_state(AppState::Gameplay)),
             );
     }
@@ -70,5 +74,16 @@ fn destroy_faraway_bullets_system(
 fn destroy_all_bullets(mut commands: Commands, query: Query<Entity, With<Bullet>>) {
     for entity in &query {
         commands.entity(entity).despawn();
+    }
+}
+
+fn update_bullet_shot_cooldown(
+    time: Res<Time>,
+    mut cooldown_query: Query<&mut BulletShotCooldown>,
+) {
+    for mut bullet_shot_cooldown in &mut cooldown_query {
+        if bullet_shot_cooldown.0 > 0.0 {
+            bullet_shot_cooldown.0 -= time.delta_seconds();
+        }
     }
 }

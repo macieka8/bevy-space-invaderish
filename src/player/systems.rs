@@ -1,4 +1,4 @@
-use crate::bullet::BulletBundle;
+use crate::bullet::{BulletBundle, BulletShotCooldown};
 use crate::movement::Velocity;
 use bevy::prelude::*;
 
@@ -47,10 +47,11 @@ pub fn player_movement_input_system(
 pub fn player_shoot_input_system(
     keyboard_input: Res<Input<KeyCode>>,
     mut commands: Commands,
-    player_query: Query<&Transform, With<Player>>,
+    mut player_query: Query<(&Transform, &mut BulletShotCooldown), With<Player>>,
 ) {
-    if keyboard_input.just_pressed(SHOOT_KEYCODE) {
-        let player_transform = player_query.single();
+    let (player_transform, mut player_shot_cooldown) = player_query.single_mut();
+    if player_shot_cooldown.0 <= 0.0 && keyboard_input.pressed(SHOOT_KEYCODE) {
+        player_shot_cooldown.0 = PLAYER_SHOT_RATE;
         let missle_position = player_transform.translation + Vec3::Y * 0.7;
         commands.spawn(BulletBundle::new(
             missle_position.truncate(),

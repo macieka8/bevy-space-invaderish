@@ -1,5 +1,7 @@
-use crate::movement::Velocity;
+use crate::{bullet::BulletShotCooldown, movement::Velocity};
 use bevy::prelude::*;
+
+pub const PLAYER_SHOT_RATE: f32 = 0.5;
 
 #[derive(Component)]
 pub struct Player;
@@ -8,6 +10,7 @@ pub struct Player;
 pub struct PlayerBundle {
     pub sprite_bundle: SpriteBundle,
     pub velocity: Velocity,
+    pub shot_cooldown: BulletShotCooldown,
     pub marker: Player,
 }
 
@@ -24,6 +27,7 @@ impl Default for PlayerBundle {
             },
             velocity: Velocity(Vec2::new(0.0, 0.0)),
             marker: Player,
+            shot_cooldown: BulletShotCooldown(0.0),
         }
     }
 }

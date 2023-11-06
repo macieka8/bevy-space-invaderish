@@ -66,13 +66,11 @@ pub fn check_player_collision_system(
 
 pub fn enemy_shoot_system(
     mut commands: Commands,
-    time: Res<Time>,
     mut enemy_query: Query<(&mut BulletShotCooldown, &Transform), With<Enemy>>,
 ) {
     let mut rng = rand::thread_rng();
 
     for (mut bullet_shot_cooldown, transform) in enemy_query.iter_mut() {
-        bullet_shot_cooldown.0 -= time.delta().as_secs_f32();
         if bullet_shot_cooldown.0 <= 0.0 {
             bullet_shot_cooldown.0 =
                 rng.gen_range(ENEMY_BULLET_SHOT_RATE.x..ENEMY_BULLET_SHOT_RATE.y);
