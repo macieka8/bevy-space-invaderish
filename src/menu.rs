@@ -8,14 +8,18 @@ impl Plugin for MenuPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(OnEnter(AppState::Paused), enter_menu)
             .add_systems(OnExit(AppState::Paused), exit_menu)
-            .add_systems(Update, button_system.run_if(in_state(AppState::Paused)));
+            .add_systems(Update, play_again_system.run_if(in_state(AppState::Paused)));
     }
 }
 
-fn button_system(
+fn play_again_system(
     interation_query: Query<&Interaction, (With<Button>, Changed<Interaction>)>,
     mut next_state: ResMut<NextState<AppState>>,
+    keyboard_input: Res<Input<KeyCode>>,
 ) {
+    if keyboard_input.just_pressed(KeyCode::Return) {
+        next_state.set(AppState::Gameplay);
+    }
     for interaction in &interation_query {
         match interaction {
             Interaction::Pressed => {
