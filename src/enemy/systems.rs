@@ -76,10 +76,12 @@ pub fn enemy_shoot_system(
                 rng.gen_range(DEFAULT_BULLET_COOLDOWN.x..DEFAULT_BULLET_COOLDOWN.y);
 
             let bullet_position = Vec2::new(transform.translation.x, transform.translation.y - 0.4);
-            commands.spawn((
+            let mut bullet = (
                 BulletBundle::new(bullet_position, Vec2::new(0.0, -2.5)),
                 EnemyBullet,
-            ));
+            );
+            bullet.0.sprite_bundle.sprite.color = Color::hsl(rng.gen_range(0.0..360.0), 1.0, 0.55);
+            commands.spawn(bullet);
         }
     }
 }
