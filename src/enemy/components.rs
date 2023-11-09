@@ -6,13 +6,19 @@ use std::f32::consts::PI;
 // Determines how long enemies can wait between shots
 // x is min cooldown
 // y is max cooldown
-pub const ENEMY_BULLET_SHOT_RATE: Vec2 = Vec2::new(2.0, 25.0);
+pub const DEFAULT_BULLET_COOLDOWN: Vec2 = Vec2::new(2.0, 25.0);
 
 #[derive(Component)]
 pub struct Enemy;
 
 #[derive(Component)]
 pub struct EnemyBullet;
+
+#[derive(Resource)]
+pub struct EnemyBulletCooldown {
+    pub min: f32,
+    pub max: f32,
+}
 
 #[derive(Bundle)]
 pub struct EnemyBundle {

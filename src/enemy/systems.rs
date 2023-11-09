@@ -73,7 +73,7 @@ pub fn enemy_shoot_system(
     for (mut bullet_shot_cooldown, transform) in enemy_query.iter_mut() {
         if bullet_shot_cooldown.0 <= 0.0 {
             bullet_shot_cooldown.0 =
-                rng.gen_range(ENEMY_BULLET_SHOT_RATE.x..ENEMY_BULLET_SHOT_RATE.y);
+                rng.gen_range(DEFAULT_BULLET_COOLDOWN.x..DEFAULT_BULLET_COOLDOWN.y);
 
             let bullet_position = Vec2::new(transform.translation.x, transform.translation.y - 0.4);
             commands.spawn((
