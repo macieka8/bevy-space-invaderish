@@ -51,8 +51,7 @@ fn level_loader(
         match current_level.0 {
             1 => level_1(commands, asset_server, enemy_bullet_cooldown, current_level),
             2 => level_2(commands, asset_server, enemy_bullet_cooldown, current_level),
-            3 => level_3(commands, asset_server, enemy_bullet_cooldown, current_level),
-            _ => println!("No more levels."),
+            _ => next_levels(commands, asset_server, enemy_bullet_cooldown, current_level),
         }
 
         ev_level_changed.send(LevelChangedEvent);
@@ -131,15 +130,15 @@ fn level_2(
     }
 }
 
-fn level_3(
+fn next_levels(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut enemy_bullet_cooldown: ResMut<EnemyBulletCooldown>,
     current_level: ResMut<CurrentLevel>,
 ) {
     *enemy_bullet_cooldown = EnemyBulletCooldown {
-        min: DEFAULT_BULLET_COOLDOWN.x / 4.0,
-        max: DEFAULT_BULLET_COOLDOWN.y / 4.0,
+        min: DEFAULT_BULLET_COOLDOWN.x / current_level.0 as f32,
+        max: DEFAULT_BULLET_COOLDOWN.y / current_level.0 as f32,
     };
 
     println!(
@@ -153,7 +152,8 @@ fn level_3(
 
     let mut rng = rand::thread_rng();
 
-    for y in 0..4 {
+    let row_count = 1 + current_level.0 / 5;
+    for y in 0..row_count {
         for x in 0..10 {
             commands.spawn(EnemyBundle::new(
                 Vec2::new(
