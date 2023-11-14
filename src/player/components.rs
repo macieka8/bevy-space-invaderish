@@ -3,6 +3,9 @@ use bevy::prelude::*;
 
 pub const PLAYER_SHOT_RATE: f32 = 0.5;
 
+#[derive(Event)]
+pub struct PlayerShootEvent;
+
 #[derive(Component)]
 pub struct Player;
 

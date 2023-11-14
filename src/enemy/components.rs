@@ -8,6 +8,9 @@ use std::f32::consts::PI;
 // y is max cooldown
 pub const DEFAULT_BULLET_COOLDOWN: Vec2 = Vec2::new(2.0, 25.0);
 
+#[derive(Event)]
+pub struct EnemyShootEvent;
+
 #[derive(Component)]
 pub struct Enemy;
 

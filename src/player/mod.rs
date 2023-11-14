@@ -14,7 +14,8 @@ pub struct PlayerPlugin;
 
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(
+        app.add_event::<PlayerShootEvent>()
+        .add_systems(
             FixedUpdate,
             player_movement_restriction_system
                 .after(GameSet::Movement)

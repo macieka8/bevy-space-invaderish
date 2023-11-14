@@ -1,4 +1,9 @@
-use bevy::{prelude::*, window::WindowResolution};
+use audio::AudioPlayerPlugin;
+use bevy::{
+    audio::{AudioPlugin, VolumeLevel},
+    prelude::*,
+    window::WindowResolution,
+};
 use bullet::BulletPlugin;
 use camera::CenterCameraPlugin;
 use enemy::EnemyPlugin;
@@ -7,6 +12,7 @@ use menu::MenuPlugin;
 use movement::MovementPlugin;
 use player::PlayerPlugin;
 
+mod audio;
 mod bullet;
 mod camera;
 mod enemy;
@@ -14,6 +20,7 @@ mod levels;
 mod menu;
 mod movement;
 mod player;
+mod utils;
 
 #[derive(SystemSet, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 enum GameSet {
@@ -40,18 +47,24 @@ fn main() {
         .configure_set(FixedUpdate, GameSet::Movement)
         .insert_resource(ClearColor(Color::rgb(0.1, 0.1, 0.1)))
         .add_plugins((
-            DefaultPlugins.set(WindowPlugin {
-                primary_window: Some(Window {
-                    position: WindowPosition::Centered(MonitorSelection::Primary),
-                    resolution: WindowResolution::new(
-                        WINDOW_RESOLUTION_WIDTH,
-                        WINDOW_RESOLUTION_HEIGHT,
-                    ),
-                    title: String::from("Space Invader in Bevy"),
+            DefaultPlugins
+                .set(WindowPlugin {
+                    primary_window: Some(Window {
+                        position: WindowPosition::Centered(MonitorSelection::Primary),
+                        resolution: WindowResolution::new(
+                            WINDOW_RESOLUTION_WIDTH,
+                            WINDOW_RESOLUTION_HEIGHT,
+                        ),
+                        title: String::from("Space Invader in Bevy"),
+                        ..default()
+                    }),
                     ..default()
+                })
+                .set(AudioPlugin {
+                    global_volume: GlobalVolume {
+                        volume: VolumeLevel::new(0.1),
+                    },
                 }),
-                ..default()
-            }),
             PlayerPlugin,
             CenterCameraPlugin,
             MovementPlugin,
@@ -59,6 +72,7 @@ fn main() {
             LevelsPlugin,
             MenuPlugin,
             BulletPlugin,
+            AudioPlayerPlugin,
         ))
         .add_systems(Startup, setup)
         .add_systems(Update, bevy::window::close_on_esc)

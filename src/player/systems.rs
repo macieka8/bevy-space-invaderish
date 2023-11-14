@@ -48,6 +48,7 @@ pub fn player_shoot_input_system(
     keyboard_input: Res<Input<KeyCode>>,
     mut commands: Commands,
     mut player_query: Query<(&Transform, &mut BulletShotCooldown), With<Player>>,
+    mut ev_player_shoot: EventWriter<PlayerShootEvent>,
 ) {
     let (player_transform, mut player_shot_cooldown) = player_query.single_mut();
     if player_shot_cooldown.0 <= 0.0 && keyboard_input.pressed(SHOOT_KEYCODE) {
@@ -57,6 +58,7 @@ pub fn player_shoot_input_system(
             missle_position.truncate(),
             Vec2::new(0.0, 2.5),
         ));
+        ev_player_shoot.send(PlayerShootEvent);
     }
 }
 

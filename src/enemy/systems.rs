@@ -67,6 +67,7 @@ pub fn check_player_collision_system(
 pub fn enemy_shoot_system(
     mut commands: Commands,
     mut enemy_query: Query<(&mut BulletShotCooldown, &Transform), With<Enemy>>,
+    mut ev_enemy_shoot: EventWriter<EnemyShootEvent>,
 ) {
     let mut rng = rand::thread_rng();
 
@@ -82,6 +83,7 @@ pub fn enemy_shoot_system(
             );
             bullet.0.sprite_bundle.sprite.color = Color::hsl(rng.gen_range(0.0..360.0), 1.0, 0.55);
             commands.spawn(bullet);
+            ev_enemy_shoot.send(EnemyShootEvent);
         }
     }
 }
