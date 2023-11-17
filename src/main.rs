@@ -6,6 +6,7 @@ use bevy::{
 };
 use bullet::BulletPlugin;
 use camera::CenterCameraPlugin;
+use collider::ColliderPlugin;
 use enemy::EnemyPlugin;
 use levels::LevelsPlugin;
 use menu::MenuPlugin;
@@ -15,6 +16,7 @@ use player::PlayerPlugin;
 mod audio;
 mod bullet;
 mod camera;
+mod collider;
 mod enemy;
 mod levels;
 mod menu;
@@ -73,6 +75,7 @@ fn main() {
             MenuPlugin,
             BulletPlugin,
             AudioPlayerPlugin,
+            ColliderPlugin,
         ))
         .add_systems(Startup, setup)
         .add_systems(Update, bevy::window::close_on_esc)

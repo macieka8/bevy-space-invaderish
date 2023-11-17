@@ -1,19 +1,25 @@
 use crate::bullet::{BulletBundle, BulletShotCooldown};
+use crate::collider::Collider;
+use crate::enemy::components::EnemyBullet;
 use crate::movement::Velocity;
 use bevy::prelude::*;
+use bevy::sprite::collide_aabb::collide;
 
 use crate::player::*;
 
 pub fn reset_player(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    player_query: Query<Entity, With<Player>>,
+    player_query: Query<(Entity, &Children), With<Player>>,
 ) {
-    for entity in &player_query {
-        commands.entity(entity).despawn();
+    for (player, children) in &player_query {
+        for &child in children.iter() {
+            commands.entity(child).despawn();
+        }
+        commands.entity(player).despawn();
     }
 
-    commands.spawn(PlayerBundle {
+    let player = PlayerBundle {
         sprite_bundle: SpriteBundle {
             texture: asset_server.load("images/ship.png"),
             transform: Transform::from_xyz(0.0, -5.0, 0.0),
@@ -24,6 +30,30 @@ pub fn reset_player(
             ..default()
         },
         ..default()
+    };
+
+    commands.spawn(player).with_children(|parent| {
+        // Vertical collider
+        parent.spawn((
+            Collider {
+                size: Vec2::new(0.5, 0.8),
+            },
+            TransformBundle {
+                local: Transform::from_translation(Vec3::new(-0.05, 0.0, 0.0)),
+                ..default()
+            },
+        ));
+
+        // Bottom collider
+        parent.spawn((
+            Collider {
+                size: Vec2::new(0.85, 0.25),
+            },
+            TransformBundle {
+                local: Transform::from_translation(Vec3::new(0.0, -0.20, 0.0)),
+                ..default()
+            },
+        ));
     });
 }
 
@@ -71,5 +101,37 @@ pub fn player_movement_restriction_system(
         transform.translation = Vec3::new(5.5, position.y, position.z);
     } else if position.x < -5.5 {
         transform.translation = Vec3::new(-5.5, position.y, position.z);
+    }
+}
+
+pub fn check_player_collision_system(
+    mut commands: Commands,
+    bullet_query: Query<(&Transform, &Sprite, Entity), With<EnemyBullet>>,
+    player_query: Query<&Children, With<Player>>,
+    collider_query: Query<(&GlobalTransform, &Collider)>,
+    mut next_state: ResMut<NextState<AppState>>,
+) {
+    for (bullet_transform, bullet_sprite, bullet_entity) in &bullet_query {
+        for children in &player_query {
+            let bullet_size = bullet_sprite.custom_size.unwrap_or(Vec2::new(1.0, 1.0));
+            // Iterate over all children with collider component
+            for &child in children {
+                let (global_transform, player_collider) = collider_query.get(child).unwrap();
+                let collider_position = global_transform.translation();
+
+                let collision = collide(
+                    bullet_transform.translation,
+                    bullet_size,
+                    collider_position,
+                    player_collider.size,
+                );
+
+                if collision.is_some() {
+                    commands.entity(bullet_entity).despawn();
+                    // todo: handle player got hit
+                    next_state.set(AppState::Paused);
+                }
+            }
+        }
     }
 }
