@@ -11,6 +11,9 @@ pub const DEFAULT_BULLET_COOLDOWN: Vec2 = Vec2::new(2.0, 25.0);
 #[derive(Event)]
 pub struct EnemyShootEvent;
 
+#[derive(Event)]
+pub struct EnemyDestroyedEvent;
+
 #[derive(Component)]
 pub struct Enemy;
 

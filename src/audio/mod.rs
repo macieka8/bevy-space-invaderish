@@ -1,6 +1,6 @@
-use crate::enemy::components::EnemyShootEvent;
+use crate::enemy::components::{EnemyDestroyedEvent, EnemyShootEvent};
 use crate::player::PlayerShootEvent;
-use crate::utils::wave::{fade_out, normalized_sin, square_wave};
+use crate::utils::wave::{fade_out, normalized_sin, saw_wave, square_wave};
 use crate::GameSet;
 use bevy::audio::AddAudioSource;
 use bevy::prelude::*;
@@ -35,20 +35,45 @@ const ENEMY_ATTACK_SOUND: GeneratedAudio = GeneratedAudio {
     frequency_function: |_t| 1.0,
 };
 
+const ENEMY_DESTROYED_SOUND: GeneratedAudio = GeneratedAudio {
+    carrier_frequency: 200.0,
+    duration: 0.3,
+    main_function: saw_wave,
+    volume_function: |_t| 0.5,
+    frequency_function: |t| 1.0 / f32::powi(t + 1.0, 4),
+};
+
 pub struct AudioPlayerPlugin;
 
 impl Plugin for AudioPlayerPlugin {
     fn build(&self, app: &mut App) {
         app.add_audio_source::<GeneratedAudio>()
-            .insert_resource::<GeneratedAudio>(ENEMY_ATTACK_SOUND)
+            .insert_resource::<GeneratedAudio>(ENEMY_DESTROYED_SOUND)
             .add_systems(
                 Update,
                 (
                     sound_tester.in_set(GameSet::Input),
                     player_shoot_audio,
                     enemy_shoot_audio,
+                    enemy_destroyed_audio,
                 ),
             );
+    }
+}
+
+fn enemy_destroyed_audio(
+    mut commands: Commands,
+    mut assets: ResMut<Assets<GeneratedAudio>>,
+    mut ev_enemy_destroyed: EventReader<EnemyDestroyedEvent>,
+) {
+    for _ev in ev_enemy_destroyed.iter() {
+        commands.spawn(AudioSourceBundle {
+            source: assets.add(ENEMY_DESTROYED_SOUND),
+            settings: PlaybackSettings {
+                mode: bevy::audio::PlaybackMode::Despawn,
+                ..default()
+            },
+        });
     }
 }
 

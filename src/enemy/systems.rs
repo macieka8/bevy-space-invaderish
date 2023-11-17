@@ -14,6 +14,7 @@ pub fn check_enemy_collision_system(
     mut commands: Commands,
     bullet_query: Query<(&Transform, &Sprite, Entity), (With<Bullet>, Without<EnemyBullet>)>,
     enemy_query: Query<(&Transform, &Sprite, Entity), With<Enemy>>,
+    mut ev_enemy_destroyed: EventWriter<EnemyDestroyedEvent>,
 ) {
     for (bullet_transform, bullet_sprite, bullet_entity) in &bullet_query {
         for (enemy_transform, enemy_sprite, enemy_entity) in &enemy_query {
@@ -30,6 +31,8 @@ pub fn check_enemy_collision_system(
             if collision.is_some() {
                 commands.entity(bullet_entity).despawn();
                 commands.entity(enemy_entity).despawn();
+
+                ev_enemy_destroyed.send(EnemyDestroyedEvent);
             }
         }
     }
