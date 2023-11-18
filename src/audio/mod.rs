@@ -13,7 +13,7 @@ mod generated_audio_decoder;
 
 const PLAYER_ATTACK_SOUND: GeneratedAudio = GeneratedAudio {
     carrier_frequency: 300.0,
-    duration: 1.0,
+    duration: 0.5,
     main_function: normalized_sin,
     volume_function: fade_out,
     frequency_function: |t| f32::max(1.0 - t, 0.3),
