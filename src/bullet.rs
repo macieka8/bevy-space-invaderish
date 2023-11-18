@@ -1,4 +1,8 @@
-use crate::{levels::LevelChangedEvent, movement::Velocity, AppState};
+use crate::{
+    levels::{LevelChangedEvent, LevelSet},
+    movement::Velocity,
+    AppState,
+};
 use bevy::prelude::*;
 
 #[derive(Component)]
@@ -39,11 +43,19 @@ impl Plugin for BulletPlugin {
         app.add_systems(OnEnter(AppState::Gameplay), destroy_all_bullets)
             .add_systems(
                 Update,
-                (
-                    destroy_faraway_bullets_system,
-                    on_level_changed_event,
-                    update_bullet_shot_cooldown,
-                )
+                (destroy_faraway_bullets_system, update_bullet_shot_cooldown)
+                    .run_if(in_state(AppState::Gameplay)),
+            )
+            .add_systems(
+                Update,
+                (on_level_changed_event)
+                    // on_level_changed_event destroys all bullets so that enemies don't spawn on them and get instantly destroyed.
+                    // To assure this, on_level_changed_event needs to run before enemies to bullets collision check.
+                    // Expected system order:
+                    //  - level loader spawns enemies
+                    //  - bullets get destroyed
+                    //  - enemies to bullets collision check
+                    .after(LevelSet::LevelLoader)
                     .run_if(in_state(AppState::Gameplay)),
             );
     }

@@ -14,6 +14,11 @@ pub struct LevelChangedEvent;
 
 pub struct LevelsPlugin;
 
+#[derive(SystemSet, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum LevelSet {
+    LevelLoader,
+}
+
 impl Plugin for LevelsPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(CurrentLevel(0))
@@ -21,8 +26,14 @@ impl Plugin for LevelsPlugin {
                 min: DEFAULT_BULLET_COOLDOWN.x,
                 max: DEFAULT_BULLET_COOLDOWN.y,
             })
+            .configure_set(Update, LevelSet::LevelLoader)
             .add_event::<LevelChangedEvent>()
-            .add_systems(Update, level_loader.run_if(in_state(AppState::Gameplay)))
+            .add_systems(
+                Update,
+                level_loader
+                    .in_set(LevelSet::LevelLoader)
+                    .run_if(in_state(AppState::Gameplay)),
+            )
             .add_systems(OnEnter(AppState::Gameplay), reset_level);
     }
 }
