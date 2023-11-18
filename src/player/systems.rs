@@ -127,7 +127,7 @@ pub fn check_player_collision_system(
                 );
 
                 if collision.is_some() {
-                    commands.entity(bullet_entity).despawn();
+                    //commands.entity(bullet_entity).despawn();
                     // todo: handle player got hit
                     next_state.set(AppState::Paused);
                 }
