@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bevy = { version = "0.11.3", features = ["dynamic_linking"] }
+bevy = { version = "0.11.3", features = ["dynamic_linking"] } # remove dynamic_linking for release builds
 rand = "0.8.5"
 rodio = "0.17.3"
 
