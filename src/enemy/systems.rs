@@ -42,13 +42,14 @@ pub fn enemy_shoot_system(
     mut commands: Commands,
     mut enemy_query: Query<(&mut BulletShotCooldown, &Transform), With<Enemy>>,
     mut ev_enemy_shoot: EventWriter<EnemyShootEvent>,
+    enemy_bullet_cooldown: Res<EnemyBulletCooldown>,
 ) {
     let mut rng = rand::thread_rng();
 
     for (mut bullet_shot_cooldown, transform) in enemy_query.iter_mut() {
         if bullet_shot_cooldown.0 <= 0.0 {
             bullet_shot_cooldown.0 =
-                rng.gen_range(DEFAULT_BULLET_COOLDOWN.x..DEFAULT_BULLET_COOLDOWN.y);
+                rng.gen_range(enemy_bullet_cooldown.min..enemy_bullet_cooldown.max);
 
             let bullet_position = Vec2::new(transform.translation.x, transform.translation.y - 0.4);
             let mut bullet = (
