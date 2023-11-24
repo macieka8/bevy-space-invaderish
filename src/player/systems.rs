@@ -105,18 +105,19 @@ pub fn player_movement_restriction_system(
 }
 
 pub fn check_player_collision_system(
-    mut commands: Commands,
-    bullet_query: Query<(&Transform, &Sprite, Entity), With<EnemyBullet>>,
+    bullet_query: Query<(&Transform, &Sprite), With<EnemyBullet>>,
     player_query: Query<&Children, With<Player>>,
     collider_query: Query<(&GlobalTransform, &Collider)>,
     mut next_state: ResMut<NextState<AppState>>,
 ) {
-    for (bullet_transform, bullet_sprite, bullet_entity) in &bullet_query {
+    for (bullet_transform, bullet_sprite) in &bullet_query {
         for children in &player_query {
             let bullet_size = bullet_sprite.custom_size.unwrap_or(Vec2::new(1.0, 1.0));
             // Iterate over all children with collider component
             for &child in children {
-                let (global_transform, player_collider) = collider_query.get(child).unwrap();
+                let (global_transform, player_collider) = collider_query
+                    .get(child)
+                    .expect("Error while quering for player's child Collider");
                 let collider_position = global_transform.translation();
 
                 let collision = collide(
@@ -127,7 +128,6 @@ pub fn check_player_collision_system(
                 );
 
                 if collision.is_some() {
-                    //commands.entity(bullet_entity).despawn();
                     // todo: handle player got hit
                     next_state.set(AppState::Paused);
                 }
