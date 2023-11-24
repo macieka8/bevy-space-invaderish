@@ -80,11 +80,15 @@ fn main() {
             ColliderPlugin,
         ))
         .add_systems(Startup, setup)
-        .add_systems(Update, bevy::window::close_on_esc)
+        .add_systems(Update, (bevy::window::close_on_esc, toggle_gizmos))
         .run();
 }
 
-fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
+fn setup(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    mut gizmo_config: ResMut<GizmoConfig>,
+) {
     // spawn background image
     commands.spawn(SpriteBundle {
         texture: asset_server.load("images/space.png"),
@@ -94,4 +98,13 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         },
         ..default()
     });
+
+    // Disable gizmos by default
+    gizmo_config.enabled = false;
+}
+
+fn toggle_gizmos(keyboard_input: Res<Input<KeyCode>>, mut gizmo_config: ResMut<GizmoConfig>) {
+    if keyboard_input.just_pressed(KeyCode::F3) {
+        gizmo_config.enabled = !gizmo_config.enabled;
+    }
 }
