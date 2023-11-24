@@ -148,8 +148,11 @@ fn next_levels(
     current_level: ResMut<CurrentLevel>,
 ) {
     *enemy_bullet_cooldown = EnemyBulletCooldown {
-        min: DEFAULT_BULLET_COOLDOWN.x / current_level.0 as f32,
-        max: DEFAULT_BULLET_COOLDOWN.y / current_level.0 as f32,
+        min: f32::max(DEFAULT_BULLET_COOLDOWN.x / current_level.0 as f32, 1.0),
+        max: f32::max(
+            DEFAULT_BULLET_COOLDOWN.y - (current_level.0 * 2u32) as f32,
+            2.0,
+        ),
     };
 
     println!(
@@ -158,14 +161,14 @@ fn next_levels(
     );
 
     let x_interspace: f32 = 0.5 + 0.5;
-    let x_offset: f32 = -(x_interspace / 2.0 + x_interspace * 4.0);
+    let x_offset: f32 = -(x_interspace / 2.0 + x_interspace * 5.0);
     let y_offset: f32 = 4.0;
 
     let mut rng = rand::thread_rng();
 
-    let row_count = 1 + current_level.0 / 5;
+    let row_count = i32::min(current_level.0 as i32 - 2, 5);
     for y in 0..row_count {
-        for x in 0..10 {
+        for x in 0..12 {
             commands.spawn(EnemyBundle::new(
                 Vec2::new(
                     x_offset + x_interspace * x as f32,
