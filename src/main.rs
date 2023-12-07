@@ -59,7 +59,7 @@ fn main() {
                             WINDOW_RESOLUTION_WIDTH,
                             WINDOW_RESOLUTION_HEIGHT,
                         ),
-                        title: String::from("Space Invader in Bevy"),
+                        title: String::from("bevy-space-invaderish"),
                         ..default()
                     }),
                     ..default()
