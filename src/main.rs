@@ -91,6 +91,7 @@ fn setup(
 ) {
     // spawn background image
     commands.spawn(SpriteBundle {
+        transform: Transform::from_xyz(0.0, 0.0, -5.0), // Moves background to the background
         texture: asset_server.load("images/space.png"),
         sprite: Sprite {
             custom_size: Some(CAMERA_SIZE),
